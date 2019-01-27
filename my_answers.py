@@ -55,15 +55,18 @@ class NeuralNetwork(object):
         '''
         #### Implement the forward pass here ####
         ### Forward pass ###
-        # DONE: Hidden layer - Replace these values with your calculations.
+        # DONE: Hidden layer
         hidden_inputs = np.matmul(X, self.weights_input_to_hidden) # signals into hidden layer
         hidden_outputs = self.activation_function(hidden_inputs) # signals from hidden layer
 
-        # DONE: Output layer - Replace these values with your calculations.
+        # DONE: Output layer
         final_inputs = np.matmul(hidden_outputs, self.weights_hidden_to_output) # signals into final output layer
         final_outputs = self.activation_function(final_inputs) # signals from final output layer
         
         return final_outputs, hidden_outputs
+
+    def error_term_formula(error, output):
+        return error * output * (1 - output)
 
     def backpropagation(self, final_outputs, hidden_outputs, X, y, delta_weights_i_h, delta_weights_h_o):
         ''' Implement backpropagation
@@ -79,21 +82,22 @@ class NeuralNetwork(object):
         #### Implement the backward pass here ####
         ### Backward pass ###
 
-        # TODO: Output error - Replace this value with your calculations.
-        error = None # Output layer error is the difference between desired target and actual output.
+        # DONE: Output error 
+        error = y - final_outputs # Output layer error is the difference between desired target and actual output.
         
-        # TODO: Calculate the hidden layer's contribution to the error
-        hidden_error = None
+        # DONE: Calculate the hidden layer's contribution to the error
+        hidden_error = np.matmul(error, np.transponse(weights_hidden_to_output))
         
         # TODO: Backpropagated error terms - Replace these values with your calculations.
-        output_error_term = None
+        output_error_term = error * 1
         
-        hidden_error_term = None
+        hidden_error_term = self.error_term_formula(error, hidden_outputs)
         
         # Weight step (input to hidden)
-        delta_weights_i_h += None
+        delta_weights_i_h += np.transpose(hidden_error_term * X)
         # Weight step (hidden to output)
-        delta_weights_h_o += None
+        delta_weights_h_o += output_error_term * hidden_outputs[:, None]
+        
         return delta_weights_i_h, delta_weights_h_o
 
     def update_weights(self, delta_weights_i_h, delta_weights_h_o, n_records):
